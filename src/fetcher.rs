@@ -26,7 +26,7 @@ pub fn get_problem(frontend_question_id: u32) -> Option<Problem> {
                 return None;
             }
 
-            let client = reqwest::Client::new();
+            let client = reqwest::blocking::Client::new();
             let resp: RawProblem = client
                 .post(GRAPHQL_URL)
                 .json(&Query::question_query(
@@ -62,9 +62,15 @@ pub async fn get_problem_async(problem_stat: StatWithStatus) -> Option<Problem> 
         );
         return None;
     }
-    let resp = surf::post(GRAPHQL_URL).body_json(&Query::question_query(
-        problem_stat.stat.question_title_slug.as_ref().unwrap(),
-    ));
+    let client = reqwest::Client::new();
+    let resp = client
+        .post(GRAPHQL_URL)
+        .json(&Query::question_query(
+            problem_stat.stat.question_title_slug.as_ref().unwrap(),
+        ))
+        .send()
+        .await;
+
     if resp.is_err() {
         println!(
             "Problem {} not initialized due to some error",
@@ -72,7 +78,8 @@ pub async fn get_problem_async(problem_stat: StatWithStatus) -> Option<Problem> 
         );
         return None;
     }
-    let resp = resp.unwrap().recv_json().await;
+
+    let resp = resp.unwrap().json::<RawProblem>().await;
     if resp.is_err() {
         println!(
             "Problem {} not initialized due to some error",
@@ -97,7 +104,7 @@ pub async fn get_problem_async(problem_stat: StatWithStatus) -> Option<Problem> 
 }
 
 pub fn get_problems() -> Option<Problems> {
-    reqwest::get(PROBLEMS_URL).unwrap().json().unwrap()
+    reqwest::blocking::get(PROBLEMS_URL).ok()?.json().ok()
 }
 
 #[derive(Serialize, Deserialize)]
