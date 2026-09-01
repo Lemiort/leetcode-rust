@@ -4,3 +4,4 @@ mod s3286_find_a_safe_walk_through_a_grid;
 mod s2657_find_the_prefix_common_array_of_two_arrays;
 mod s0652_find_duplicate_subtrees;
 mod s0350_intersection_of_two_arrays_ii;
+mod s1207_unique_number_of_occurrences;
