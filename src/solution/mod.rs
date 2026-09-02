@@ -6,3 +6,4 @@ mod s0652_find_duplicate_subtrees;
 mod s0350_intersection_of_two_arrays_ii;
 mod s1207_unique_number_of_occurrences;
 mod s0863_all_nodes_distance_k_in_binary_tree;
+mod s0222_count_complete_tree_nodes;
