@@ -57,120 +57,69 @@ impl Solution {
     pub fn distance_k(
         root: Option<Rc<RefCell<TreeNode>>>,
         target: Option<Rc<RefCell<TreeNode>>>,
-        k: i32,
+        mut k: i32,
     ) -> Vec<i32> {
         let mut result = Vec::new();
-        let mut parent_map = std::collections::HashMap::new();
-        Self::build_parent_map(&root, &mut parent_map);
-
-        let target_val = target.as_ref().map(|t| t.borrow().val).unwrap_or(-1);
-        let actual_target = Self::find_node(&root, target_val);
-
-        // collect nodes in the subtree of target
-        Self::collect_nodes_at_distance_k(actual_target.clone(), k, &mut result);
-
-        // collect nodes by going up from target's parent
-        if let Some(t) = actual_target {
-            if let Some(parent) = parent_map.get(&t.borrow().val) {
-                Self::collect_nodes_at_distance_k_from_parent(
-                    parent.clone(),
-                    k - 1,
-                    &parent_map,
-                    &mut result,
-                    Some(t.borrow().val),
-                );
+        let mut adjacency = std::collections::HashMap::new();
+        let mut q = std::collections::VecDeque::new();
+        q.push_back(root.unwrap());
+        // fill adjacency list
+        while let Some(ref node_ref) = q.pop_back() {
+            let node = node_ref.borrow();
+            if let Some(ref left) = node.left {
+                q.push_back(left.clone());
+                adjacency
+                    .entry(node.val)
+                    .or_insert_with(Vec::new)
+                    .push(left.borrow().val);
+                adjacency
+                    .entry(left.borrow().val)
+                    .or_insert_with(Vec::new)
+                    .push(node.val);
+            }
+            if let Some(ref right) = node.right {
+                q.push_back(right.clone());
+                adjacency
+                    .entry(node.val)
+                    .or_insert_with(Vec::new)
+                    .push(right.borrow().val);
+                adjacency
+                    .entry(right.borrow().val)
+                    .or_insert_with(Vec::new)
+                    .push(node.val);
             }
         }
 
+        let mut q = std::collections::VecDeque::new();
+        let mut visited = std::collections::HashSet::new();
+        let target = target.unwrap().borrow().val;
+        visited.insert(target);
+        q.push_front(target);
+
+        // extract all nodes at distance k from target
+        while k > 0 {
+            let num_elements = q.len();
+            k -= 1;
+            // go over all nodes in the current level
+            for _ in 0..num_elements {
+                let node = q.pop_back().unwrap();
+                // go over all adjacent nodes
+                if let Some(adjacent_nodes) = adjacency.get(&node) {
+                    for &adjacent_node in adjacent_nodes {
+                        if !visited.contains(&adjacent_node) {
+                            visited.insert(adjacent_node);
+                            q.push_front(adjacent_node);
+                        }
+                    }
+                }
+            }
+        }
+
+        // write all nodes in the current level to result
+        while let Some(node) = q.pop_back() {
+            result.push(node);
+        }
         return result;
-    }
-
-    pub fn find_node(
-        node: &Option<Rc<RefCell<TreeNode>>>,
-        target_val: i32,
-    ) -> Option<Rc<RefCell<TreeNode>>> {
-        if let Some(n) = node {
-            if n.borrow().val == target_val {
-                return Some(n.clone());
-            }
-            if let Some(found) = Self::find_node(&n.borrow().left, target_val) {
-                return Some(found);
-            }
-            if let Some(found) = Self::find_node(&n.borrow().right, target_val) {
-                return Some(found);
-            }
-        }
-        None
-    }
-
-    pub fn build_parent_map(
-        node: &Option<Rc<RefCell<TreeNode>>>,
-        parent_map: &mut std::collections::HashMap<i32, Option<Rc<RefCell<TreeNode>>>>,
-    ) {
-        if let Some(n) = node {
-            if let Some(left) = n.borrow().left.clone() {
-                parent_map.insert(left.borrow().val, Some(n.clone()));
-                Self::build_parent_map(&Some(left), parent_map);
-            }
-            if let Some(right) = n.borrow().right.clone() {
-                parent_map.insert(right.borrow().val, Some(n.clone()));
-                Self::build_parent_map(&Some(right), parent_map);
-            }
-        }
-    }
-
-    pub fn collect_nodes_at_distance_k(
-        node: Option<Rc<RefCell<TreeNode>>>,
-        k: i32,
-        result: &mut Vec<i32>,
-    ) {
-        if let Some(n) = node {
-            if k == 0 {
-                result.push(n.borrow().val);
-            } else {
-                Self::collect_nodes_at_distance_k(n.borrow().left.clone(), k - 1, result);
-                Self::collect_nodes_at_distance_k(n.borrow().right.clone(), k - 1, result);
-            }
-        }
-    }
-
-    pub fn collect_nodes_at_distance_k_from_parent(
-        node: Option<Rc<RefCell<TreeNode>>>,
-        k: i32,
-        parent_map: &std::collections::HashMap<i32, Option<Rc<RefCell<TreeNode>>>>,
-        result: &mut Vec<i32>,
-        excluded: Option<i32>,
-    ) {
-        if let Some(n) = node {
-            let node_val = n.borrow().val;
-            if k == 0 {
-                result.push(node_val);
-            } else {
-                let borrowed = n.borrow();
-                if let Some(left) = borrowed.left.clone() {
-                    // exclude parent node
-                    if excluded.is_none() || left.borrow().val != excluded.unwrap() {
-                        Self::collect_nodes_at_distance_k(Some(left), k - 1, result);
-                    }
-                }
-                if let Some(right) = borrowed.right.clone() {
-                    // exclude parent node
-                    if excluded.is_none() || right.borrow().val != excluded.unwrap() {
-                        Self::collect_nodes_at_distance_k(Some(right), k - 1, result);
-                    }
-                }
-
-                if let Some(parent) = parent_map.get(&node_val) {
-                    Self::collect_nodes_at_distance_k_from_parent(
-                        parent.clone(),
-                        k - 1,
-                        parent_map,
-                        result,
-                        Some(node_val),
-                    );
-                }
-            }
-        }
     }
 }
 
@@ -200,7 +149,7 @@ mod tests {
                 to_tree(vec![Some(5)]),
                 2
             ),
-            vec![7, 4, 1]
+            vec![1, 7, 4]
         );
 
         assert!(Solution::distance_k(to_tree(vec![Some(1)]), to_tree(vec![Some(1)]), 3).is_empty(),);
