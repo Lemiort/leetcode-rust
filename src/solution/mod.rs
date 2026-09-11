@@ -11,3 +11,4 @@ mod s0236_lowest_common_ancestor_of_a_binary_tree;
 mod s0560_subarray_sum_equals_k;
 mod s0930_binary_subarrays_with_sum;
 mod s0523_continuous_subarray_sum;
+mod s0849_maximize_distance_to_closest_person;
