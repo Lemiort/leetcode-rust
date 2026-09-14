@@ -13,3 +13,4 @@ mod s0930_binary_subarrays_with_sum;
 mod s0523_continuous_subarray_sum;
 mod s0849_maximize_distance_to_closest_person;
 mod s0875_koko_eating_bananas;
+mod s0149_max_points_on_a_line;
