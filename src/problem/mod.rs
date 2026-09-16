@@ -1,0 +1,1 @@
+mod p0567_permutation_in_string;
