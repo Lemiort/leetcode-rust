@@ -16,3 +16,4 @@ mod s0875_koko_eating_bananas;
 mod s0149_max_points_on_a_line;
 mod s0992_subarrays_with_k_different_integers;
 mod s0003_longest_substring_without_repeating_characters;
+mod s0438_find_all_anagrams_in_a_string;
