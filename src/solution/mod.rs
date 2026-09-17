@@ -19,3 +19,4 @@ mod s0003_longest_substring_without_repeating_characters;
 mod s0438_find_all_anagrams_in_a_string;
 mod s0242_valid_anagram;
 mod s0567_permutation_in_string;
+mod s0071_simplify_path;
