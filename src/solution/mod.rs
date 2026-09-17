@@ -21,3 +21,4 @@ mod s0242_valid_anagram;
 mod s0567_permutation_in_string;
 mod s0071_simplify_path;
 mod s0150_evaluate_reverse_polish_notation;
+mod s0032_longest_valid_parentheses;
