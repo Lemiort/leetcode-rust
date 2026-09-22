@@ -22,3 +22,4 @@ mod s0567_permutation_in_string;
 mod s0071_simplify_path;
 mod s0150_evaluate_reverse_polish_notation;
 mod s0032_longest_valid_parentheses;
+mod s3498_reverse_degree_of_a_string;
