@@ -26,3 +26,4 @@ mod s3498_reverse_degree_of_a_string;
 mod s1493_longest_subarray_of_1s_after_deleting_one_element;
 mod s0228_summary_ranges;
 mod s0658_find_k_closest_elements;
+mod s0443_string_compression;
