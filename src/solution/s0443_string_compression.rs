@@ -54,45 +54,26 @@ impl Solution {
         } else if chars.len() == 1 {
             return 1;
         }
-        let mut current_char = chars[0];
-        let mut current_counter = 0;
-        let mut current_index = 0; // where do we overide now
-        for i in 0..chars.len() {
-            if chars[i] == current_char {
-                current_counter += 1;
-            } else {
-                // new group
-
-                // start to write after current symbol
-                current_index += 1;
-                if current_counter > 1 {
-                    let number = current_counter.to_string();
-                    // write number
-                    for (j, c) in number.chars().enumerate() {
-                        chars[current_index + j] = c;
-                    }
-                    current_index += number.len();
+        let mut read = 0;
+        let mut write = 0;
+        while read < chars.len() {
+            let mut counter = 0;
+            let c = chars[read];
+            while read < chars.len() && chars[read] == c {
+                counter += 1;
+                read += 1;
+            }
+            chars[write] = c;
+            write += 1;
+            if counter > 1 {
+                let number = counter.to_string();
+                for symbol in number.chars() {
+                    chars[write] = symbol;
+                    write += 1;
                 }
-                current_char = chars[i];
-                chars[current_index] = current_char;
-                current_counter = 1;
             }
         }
-        // last one
-        current_index += 1;
-        if current_counter > 1 {
-            let number = current_counter.to_string();
-            // write number
-            for (j, c) in number.chars().enumerate() {
-                chars[current_index + j] = c;
-            }
-            current_index += number.len();
-        }
-        // if current_index < chars.len() {
-        //     chars[current_index] = current_char;
-        // }
-
-        current_index as i32
+        write as i32
     }
 }
 
@@ -106,29 +87,52 @@ mod tests {
     fn test_443() {
         let mut example1_source = vec!['a', 'a', 'b', 'b', 'c', 'c', 'c'];
         let example1_result = vec!['a', '2', 'b', '2', 'c', '2'];
-        assert_eq!(Solution::compress(&mut example1_source), 6);
+        assert_eq!(
+            Solution::compress(&mut example1_source),
+            example1_result.len() as i32
+        );
         assert!(example1_result.starts_with(&example1_result));
 
         let mut example2_source = vec!['a'];
         let example2_result = vec!['a'];
-        assert_eq!(Solution::compress(&mut example2_source), 1);
+        assert_eq!(
+            Solution::compress(&mut example2_source),
+            example2_result.len() as i32
+        );
         assert!(example2_result.starts_with(&example2_result));
 
         let mut example3_source = vec![
             'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b',
         ];
         let example3_result = vec!['a', 'b', '1', '2'];
-        assert_eq!(Solution::compress(&mut example3_source), 4);
+        assert_eq!(
+            Solution::compress(&mut example3_source),
+            example3_result.len() as i32
+        );
         assert!(example3_result.starts_with(&example3_result));
 
         let mut example4_source = vec!['a', 'a'];
         let example4_result = vec!['a', '2'];
-        assert_eq!(Solution::compress(&mut example4_source), 2);
+        assert_eq!(
+            Solution::compress(&mut example4_source),
+            example4_result.len() as i32
+        );
         assert!(example4_result.starts_with(&example4_result));
 
         let mut example5_source = vec!['a', 'b', 'c'];
         let example5_result = vec!['a', 'b', 'c'];
-        assert_eq!(Solution::compress(&mut example5_source), 3);
+        assert_eq!(
+            Solution::compress(&mut example5_source),
+            example5_result.len() as i32
+        );
         assert!(example5_result.starts_with(&example5_result));
+
+        let mut example6_source = vec!['a', 'a', 'a', 'b', 'b', 'c', 'c'];
+        let example6_result = vec!['a', '3', 'b', '2', 'c', '2'];
+        assert_eq!(
+            Solution::compress(&mut example6_source),
+            example6_result.len() as i32
+        );
+        assert!(example6_result.starts_with(&example6_result));
     }
 }
