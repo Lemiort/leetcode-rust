@@ -29,3 +29,4 @@ mod s0658_find_k_closest_elements;
 mod s0443_string_compression;
 mod s0680_valid_palindrome_ii;
 mod s0056_merge_intervals;
+mod s0283_move_zeroes;
